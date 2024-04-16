@@ -19,15 +19,8 @@ struct NetTunerApp: App {
         }
         .menuBarExtraStyle(.window)
         
-        WindowGroup("Settings", id: "settings") {
-            SettingsView()
-                .modelContainer(for: RadioStation.self)
-                .onAppear(perform: {
-                    NSApplication.show(ignoringOtherApps: true)
-                })
-                .onDisappear(perform: {
-                    NSApplication.hide()
-                })
+        Settings {
+            SettingsView().modelContainer(for: RadioStation.self)
         }
     }
 }

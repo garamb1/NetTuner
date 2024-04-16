@@ -39,9 +39,9 @@ struct MenuBarView: View {
         Button("Pause") {
             audioController.pause()
         }.disabled(!audioController.isPlaying)
-        Button("Settings") {
-            openWindow(id: "settings")
-        }
+        SettingsLink {
+            Text("settings")
+        }.keyboardShortcut(",", modifiers: .command)
     }
 }
 

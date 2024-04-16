@@ -9,6 +9,30 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+
+    private enum Tabs: Hashable {
+        case general
+        case about
+    }
+    var body: some View {
+        TabView {
+            RadioStationSettingsView()
+                .tabItem {
+                    Label("Radio Stations", systemImage: "radio")
+                }
+                .tag(Tabs.general)
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "info")
+                }
+                .tag(Tabs.about)
+        }
+        .padding(20)
+        .frame(width: 550, height: 400)
+    }
+}
+
+struct RadioStationSettingsView: View {
     // Swift Data variables
     @Environment(\.modelContext) var modelContext
     @Query private var radios: [RadioStation]
@@ -33,16 +57,13 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Table(filteredRadios, selection: $selectedRadio, sortOrder: $radioSortOrder) {
-                TableColumn("Name", value: \.title)
-                TableColumn("URL") { radio in
-                    Text("\(radio.url)")
-                }
+        Table(filteredRadios, selection: $selectedRadio, sortOrder: $radioSortOrder) {
+            TableColumn("Name", value: \.title)
+            TableColumn("URL") { radio in
+                Text("\(radio.url)")
             }
-            .searchable(text: $searchText)
         }
-        .navigationTitle("Radio Stations")
+            .searchable(text: $searchText)
         .toolbar {
             ToolbarItem() {
                 Button("Add", action: addSamples)
@@ -70,6 +91,13 @@ struct SettingsView: View {
         }
     }
 }
+
+struct AboutView : View {
+    var body: some View {
+        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
+    }
+}
+
 
 #Preview {
     SettingsView()
