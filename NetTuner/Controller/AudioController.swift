@@ -10,13 +10,16 @@ import AVFoundation
 import AVKit
 
 final class AudioController: ObservableObject {
-    
 
     private var player : AVPlayer = AVPlayer()
     @Published var nowPlayingInfo : String?
     @Published var isPlaying: Bool = false
 
     private var subscriptions: Set<AnyCancellable> = Set<AnyCancellable>()
+    
+    func start(radio: RadioStation) {
+        start(url: radio.url)
+    }
     
     func start(urlString: String) {
         let testUrl: URL? = URL(string: urlString)
@@ -42,7 +45,6 @@ final class AudioController: ObservableObject {
                 switch status {
                 case .readyToPlay:
                     nowPlayingInfo = playerItem.description
-                    print(nowPlayingInfo)
                 case .failed:
                     nowPlayingInfo = "Load failed"
                 default:

@@ -15,33 +15,35 @@ struct MenuBarView: View {
 
     @Environment(\.modelContext) var modelContext
     @Query private var radios: [RadioStation]
+    @State private var selectedRadio: RadioStation?
+    @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
+    var sortedRadios: [RadioStation] {
+        radios.sorted(using: radioSortOrder)
+    }
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(radios, id: \.self) { radio in
-                    Section {
-                        Text(radio.title)
-                            .font(.headline)
-                        Text(radio.url.absoluteString)
-                    }.onTapGesture(perform: {
-                        audioController.start(url: radio.url)
-                    })
-                }
-            }.listStyle(SidebarListStyle())
-        }
-        .modelContainer(for: RadioStation.self)
-        .padding()
-        Text(audioController.nowPlayingInfo ?? "None")
-        Button("Play") {
-            audioController.play()
-        }.disabled(audioController.isPlaying)
-        Button("Pause") {
-            audioController.pause()
-        }.disabled(!audioController.isPlaying)
-        SettingsLink {
-            Text("settings")
-        }.keyboardShortcut(",", modifiers: .command)
+        VStack {
+            List(selection: $selectedRadio) {
+                ForEach(sortedRadios, id: \.self) { radio in
+                    Text(radio.title)
+                        .background(radio == selectedRadio ? Color.accentColor : nil)
+                }.onChange(of: selectedRadio, {
+                    audioController.start(radio: selectedRadio!)
+                })
+            }.listStyle(BorderedListStyle())
+                .padding()
+                .modelContainer(for: RadioStation.self)
+            Text(audioController.nowPlayingInfo ?? "None")
+            Button("Play") {
+                audioController.play()
+            }.disabled(audioController.isPlaying)
+            Button("Pause") {
+                audioController.pause()
+            }.disabled(!audioController.isPlaying)
+            SettingsLink {
+                Text("settings")
+            }.keyboardShortcut(",", modifiers: .command)
+        }.background()
     }
 }
 
