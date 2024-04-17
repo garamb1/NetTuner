@@ -15,9 +15,12 @@ struct SettingsView: View {
     @Query private var radios: [RadioStation]
     
     // Table related variables
-    @State private var selectedRadio = Set<RadioStation.ID>()
+    @State private var selectedRadios = Set<RadioStation.ID>()
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
     @State private var searchText: String = ""
+    
+    // Addition popover
+    @State private var showingAddPopover = false;
     
     var filteredRadios : [RadioStation] {
         if searchText.count < 2 {
@@ -34,7 +37,7 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        Table(filteredRadios, selection: $selectedRadio, sortOrder: $radioSortOrder) {
+        Table(filteredRadios, selection: $selectedRadios, sortOrder: $radioSortOrder) {
             TableColumn("Name", value: \.title)
             TableColumn("URL") { radio in
                 Text("\(radio.url)")
@@ -43,28 +46,72 @@ struct SettingsView: View {
             .searchable(text: $searchText)
         .toolbar {
             ToolbarItem() {
-                Button("Add", systemImage: "plus", action: addSamples)
+                Button("Add", systemImage: "plus", action: {
+                    showingAddPopover = true
+                }).popover(isPresented: $showingAddPopover, content: {
+                    AddRadioView()
+                })
             }
             ToolbarItem() {
-                Button("Remove", systemImage: "minus", action: addSamples)
-            }
-            ToolbarItem() {
-                Button("Add Samples", action: addSamples)
-            }
-            ToolbarItem() {
-                Button("Remove All", action: removeAll)
+                Button("Remove", systemImage: "minus", action: {
+                    deleteSelection()
+                })
             }
         }
     }
     
-    func addSamples() {
-        modelContext.insert(RadioStation(url: URL(string: "http://icestreaming.rai.it/1.mp3")!, title: "Rai Radio 1"))
-        modelContext.insert(RadioStation(url: URL(string: "http://icestreaming.rai.it/2.mp3")!, title: "Rai Radio 2"))
-        modelContext.insert(RadioStation(url: URL(string: "http://icestreaming.rai.it/3.mp3")!, title: "Rai Radio 3"))
+    func deleteSelection() {
+        try? modelContext.delete(
+            model: RadioStation.self,
+            where: #Predicate{
+                item in selectedRadios.contains(item.id)
+            })
+    }
+}
+
+struct AddRadioView : View {
+    @Environment(\.dismiss) var dismiss
+
+    @Environment(\.modelContext) var modelContext
+    @State private var title = ""
+    @State private var urlString = ""
+
+    
+    var body: some View {
+        VStack {
+            Form {
+                TextField("Radio Station:", text: $title)
+                TextField("URL:", text: $urlString)
+            }.padding()
+            
+            HStack {
+                Spacer()
+                Button("Cancel", action: {
+                    dismiss()
+                }).keyboardShortcut(.cancelAction)
+                Button("Add", action: {
+                    let url = URL(string: urlString)
+                    if (url != nil) {
+                        let newRadio = RadioStation(url: url!, title: title)
+                        addRadioStation(radioStation: newRadio)
+                        resetInputs()
+                        dismiss()
+                    }
+                })
+                .disabled(title.isEmpty && urlString.isEmpty)
+                .keyboardShortcut(.defaultAction)
+            }.padding()
+        }.frame(minWidth: 300)
     }
     
-    func removeAll() {
-        try? modelContext.delete(model: RadioStation.self)
+    
+    func addRadioStation(radioStation: RadioStation) {
+        modelContext.insert(radioStation)
+    }
+    
+    func resetInputs() {
+        title = ""
+        urlString = ""
     }
 }
 
