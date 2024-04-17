@@ -19,7 +19,7 @@ struct NetTunerApp: App {
         }
         .menuBarExtraStyle(.window)
         
-        Settings {
+        Window("Settings", id: "settings") {
             SettingsView().modelContainer(for: RadioStation.self)
         }
     }
