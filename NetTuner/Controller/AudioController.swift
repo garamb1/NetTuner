@@ -59,6 +59,10 @@ final class AudioController: ObservableObject {
         isPlaying = true
     }
     
+    func setVolume(volume: Float) {
+        player.volume = volume
+    }
+    
     private func observePlayingState() {
         player.publisher(for: \.timeControlStatus)
             .receive(on: DispatchQueue.main)

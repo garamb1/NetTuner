@@ -10,29 +10,6 @@ import SwiftData
 
 struct SettingsView: View {
 
-    private enum Tabs: Hashable {
-        case general
-        case about
-    }
-    var body: some View {
-        TabView {
-            RadioStationSettingsView()
-                .tabItem {
-                    Label("Radio Stations", systemImage: "radio")
-                }
-                .tag(Tabs.general)
-            AboutView()
-                .tabItem {
-                    Label("About", systemImage: "info")
-                }
-                .tag(Tabs.about)
-        }
-        .padding(20)
-        .frame(width: 550, height: 400)
-    }
-}
-
-struct RadioStationSettingsView: View {
     // Swift Data variables
     @Environment(\.modelContext) var modelContext
     @Query private var radios: [RadioStation]
@@ -66,7 +43,10 @@ struct RadioStationSettingsView: View {
             .searchable(text: $searchText)
         .toolbar {
             ToolbarItem() {
-                Button("Add", action: addSamples)
+                Button("Add", systemImage: "plus", action: addSamples)
+            }
+            ToolbarItem() {
+                Button("Remove", systemImage: "minus", action: addSamples)
             }
             ToolbarItem() {
                 Button("Add Samples", action: addSamples)
@@ -84,20 +64,9 @@ struct RadioStationSettingsView: View {
     }
     
     func removeAll() {
-        do {
-            try modelContext.delete(model: RadioStation.self)
-        } catch {
-            print("Failed to clear all Country and City data.")
-        }
+        try? modelContext.delete(model: RadioStation.self)
     }
 }
-
-struct AboutView : View {
-    var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
-
 
 #Preview {
     SettingsView()
