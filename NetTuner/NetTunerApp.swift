@@ -13,11 +13,12 @@ struct NetTunerApp: App {
     
     var body: some Scene {
         
-        MenuBarExtra("NetTuner", systemImage: "hammer") {
+        MenuBarExtra("NetTuner", systemImage: "radio") {
             MenuBarView()
                 .modelContainer(for: RadioStation.self)
         }
         .menuBarExtraStyle(.window)
+        .defaultSize(width: 400, height: 300)
         
         Window("Radio Stations", id: "settings") {
             SettingsView().modelContainer(for: RadioStation.self)
