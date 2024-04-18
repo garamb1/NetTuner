@@ -18,6 +18,10 @@ struct MenuBarView: View {
     @Query private var radios: [RadioStation]
     @State private var selectedRadio: RadioStation?
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
+    
+    // Animation Toggles
+    @State private var stopAnimationToggle: Bool = false
+    
     var sortedRadios: [RadioStation] {
         radios.sorted(using: radioSortOrder)
     }
@@ -25,17 +29,28 @@ struct MenuBarView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("NetTuner").font(.title)
-                    .padding()
+                Label("", systemImage: "wave.3.backward")
+                    .symbolEffect(.bounce.up.byLayer,
+                                  options: audioController.isPlaying ? .repeating : .nonRepeating,
+                                  value: audioController.isPlaying)
+                    .font(.largeTitle)
+                Text("NetTuner").font(.largeTitle)
+                Label("", systemImage: "wave.3.forward")
+                    .symbolEffect(.bounce.up.byLayer,
+                                  options: audioController.isPlaying ? .repeating : .nonRepeating,
+                                  value: audioController.isPlaying)
+                    .font(.largeTitle)
+                Spacer()
                 Button(action: {
                     openWindow(id: "settings")
                 }) {
                     Text("Radio Stations...")
                     Image(systemName: "gear")
                 }.keyboardShortcut(",", modifiers: .command)
-            }    .frame(maxWidth: .infinity, alignment: .center)
+                
+            }.frame(maxWidth: .infinity, alignment: .center)
+             .padding()
 
-            
             if !sortedRadios.isEmpty {
                 List(selection: $selectedRadio) {
                     ForEach(sortedRadios, id: \.self) { radio in
@@ -62,13 +77,15 @@ struct MenuBarView: View {
                 Button(action: {
                     selectedRadio = nil
                     audioController.pause()
+                    stopAnimationToggle.toggle()
                 }) {
-                    Image(systemName: "stop.circle")
-                        .resizable()
-                        .frame(width: 32.0, height: 32.0)
-
+                    Label(selectedRadio?.title ?? "Not Playing", systemImage: "stop.circle")
+                        .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
+                        .font(.title)
                 }.disabled(!audioController.isPlaying)
-                Text(selectedRadio?.title ?? "Not Playing").bold()
+                 .buttonStyle(PlainButtonStyle())
+
+                Spacer()
             }.padding()
             
             HStack {
