@@ -55,7 +55,7 @@ struct SettingsView: View {
             ToolbarItem() {
                 Button("Remove", systemImage: "minus", action: {
                     deleteSelection()
-                })
+                }).disabled(radios.isEmpty)
             }
         }
     }
