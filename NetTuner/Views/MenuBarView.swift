@@ -33,20 +33,33 @@ struct MenuBarView: View {
                     .symbolEffect(.bounce.up.byLayer,
                                   options: audioController.isPlaying ? .repeating : .nonRepeating,
                                   value: audioController.isPlaying)
-                    .font(.largeTitle)
-                Text("NetTuner").font(.largeTitle)
+                    .font(.title)
+                Text("NetTuner").font(.title)
                 Label("", systemImage: "wave.3.forward")
                     .symbolEffect(.bounce.up.byLayer,
                                   options: audioController.isPlaying ? .repeating : .nonRepeating,
                                   value: audioController.isPlaying)
-                    .font(.largeTitle)
+                    .font(.title)
                 Spacer()
-                Button(action: {
-                    openWindow(id: "settings")
-                }) {
-                    Text("Radio Stations...")
+                
+                Menu {
+                    Button(action: {
+                        openWindow(id: "settings")
+                    }) {
+                        Text("Radio Stations")
+                    }.keyboardShortcut(",", modifiers: .command)
+                    
+                    Button(action: {
+                        exit(0)
+                    }) {
+                        Text("Quit")
+                    }.keyboardShortcut("q", modifiers: .command)
+                    
+                } label: {
                     Image(systemName: "gear")
-                }.keyboardShortcut(",", modifiers: .command)
+                }.fixedSize()
+                 .menuStyle(.borderlessButton)
+
                 
             }.frame(maxWidth: .infinity, alignment: .center)
              .padding()
@@ -81,7 +94,7 @@ struct MenuBarView: View {
                 }) {
                     Label(selectedRadio?.title ?? "Not Playing", systemImage: "stop.circle")
                         .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
-                        .font(.title)
+                        .font(.largeTitle)
                 }.disabled(!audioController.isPlaying)
                  .buttonStyle(PlainButtonStyle())
 

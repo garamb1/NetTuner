@@ -18,7 +18,7 @@ struct NetTunerApp: App {
                 .modelContainer(for: RadioStation.self)
         }
         .menuBarExtraStyle(.window)
-        .defaultSize(width: 400, height: 300)
+        .defaultSize(width: 300, height: 350)
         
         Window("Radio Stations", id: "settings") {
             SettingsView().modelContainer(for: RadioStation.self)
