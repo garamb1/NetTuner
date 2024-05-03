@@ -12,6 +12,7 @@ import AVKit
 final class AudioController: ObservableObject {
 
     private var player : AVPlayer = AVPlayer()
+    private var radioStation : RadioStation? = nil
     @Published var nowPlayingInfo : String?
     @Published var isPlaying: Bool = false
 
@@ -19,6 +20,7 @@ final class AudioController: ObservableObject {
     
     func start(radio: RadioStation) {
         start(url: radio.url)
+        radioStation = radio
     }
     
     func start(urlString: String) {
@@ -44,9 +46,15 @@ final class AudioController: ObservableObject {
                 guard let self else { return }
                 switch status {
                 case .readyToPlay:
-                    nowPlayingInfo = playerItem.description
+                    nowPlayingInfo = radioStation?.title
+                    player.play()
+                    isPlaying = true
                 case .failed:
-                    nowPlayingInfo = "Load failed"
+                    nowPlayingInfo = "Load failed."
+                    isPlaying = false
+                case .unknown:
+                    nowPlayingInfo = "Loading..."
+                    isPlaying = false
                 default:
                     break
                 }
@@ -56,7 +64,7 @@ final class AudioController: ObservableObject {
         // Set the item as the player's current item.
         player.replaceCurrentItem(with: playerItem)
         player.play()
-        isPlaying = true
+        isPlaying = nowPlayingInfo == radioStation?.title
     }
     
     func setVolume(volume: Float) {
@@ -77,9 +85,14 @@ final class AudioController: ObservableObject {
         }
     }
 
-    func pause() {
+    func stop() {
         player.pause()
-        isPlaying = false
+        reset()
     }
 
+    func reset() {
+        isPlaying = false
+        radioStation = nil
+        nowPlayingInfo = nil
+    }
 }
