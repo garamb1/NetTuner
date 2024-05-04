@@ -29,19 +29,13 @@ struct MenuBarView: View {
     var body: some View {
         VStack {
             HStack {
-                Label("", systemImage: "wave.3.backward")
-                    .symbolEffect(.bounce.up.byLayer,
-                                  options: audioController.isPlaying ? .repeating : .nonRepeating,
-                                  value: audioController.isPlaying)
-                    .font(.title)
-                Text("NetTuner").font(.title)
+                Text("NetTuner").font(.largeTitle)
                 Label("", systemImage: "wave.3.forward")
                     .symbolEffect(.bounce.up.byLayer,
-                                  options: audioController.isPlaying ? .repeating : .nonRepeating,
-                                  value: audioController.isPlaying)
+                                  options: audioController.status == AudioControllerStatus.playing ? .repeating : .nonRepeating,
+                                  value: audioController.status)
                     .font(.title)
                 Spacer()
-                
                 Menu {
                     Button(action: {
                         openWindow(id: "settings")
@@ -60,7 +54,6 @@ struct MenuBarView: View {
                 }.fixedSize()
                  .menuStyle(.borderlessButton)
 
-                
             }.frame(maxWidth: .infinity, alignment: .center)
              .padding()
 
@@ -72,7 +65,16 @@ struct MenuBarView: View {
                                 .background(radio == selectedRadio ? Color.accentColor : nil)
                             
                             if radio == selectedRadio {
-                                Image(systemName: "speaker.wave.3.fill")
+                                switch audioController.status {
+                                case .playing:
+                                    Image(systemName: "speaker.wave.3.fill")
+                                case .loading:
+                                    Image(systemName: "network").symbolEffect(.pulse)
+                                case .failed:
+                                    Image(systemName: "network.slash")
+                                default:
+                                    EmptyView()
+                                }
                             }
                             
                         }
@@ -83,30 +85,38 @@ struct MenuBarView: View {
                     })
                 }.listStyle(BorderedListStyle())
                     .modelContainer(for: RadioStation.self)
-                    .padding()
+                    .padding(.horizontal)
             }
             
-            HStack {
-                Button(action: {
-                    selectedRadio = nil
-                    audioController.pause()
-                    stopAnimationToggle.toggle()
-                }) {
-                    Label(selectedRadio?.title ?? "Not Playing", systemImage: "stop.circle")
-                        .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
-                        .font(.largeTitle)
-                }.disabled(!audioController.isPlaying)
-                 .buttonStyle(PlainButtonStyle())
-
-                Spacer()
-            }.padding()
-            
-            HStack {
-                Image(systemName: "speaker.fill")
-                Slider(value: $volume, in: 0...1, onEditingChanged: {_ in 
-                    audioController.setVolume(volume: volume)
-                })
-                Image(systemName: "speaker.wave.3.fill")
+            VStack {
+                HStack {
+                    Button(action: {
+                        selectedRadio = nil
+                        audioController.stop()
+                        stopAnimationToggle.toggle()
+                    }) {
+                        Label(audioController.statusString, systemImage: "stop.circle")
+                            .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
+                            .font(.largeTitle)
+                    }.disabled(audioController.status != .playing)
+                        .buttonStyle(PlainButtonStyle())
+                    
+                    Spacer()
+                }.padding()
+                    .cornerRadius(20) /// make the background rounded
+                    .overlay( /// apply a rounded border
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(.gray, lineWidth: 1)
+                    )
+                
+                HStack {
+                    Image(systemName: "speaker.fill")
+                    Slider(value: $volume, in: 0...1, onEditingChanged: {_ in
+                        audioController.setVolume(volume: volume)
+                    })
+                    Image(systemName: "speaker.wave.3.fill")
+                }.padding(.vertical)
+                
             }.padding()
 
         }.background()
