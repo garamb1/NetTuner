@@ -13,8 +13,9 @@ final class AudioController: ObservableObject {
 
     private var player : AVPlayer = AVPlayer()
     private var radioStation : RadioStation? = nil
-    @Published var nowPlayingInfo : String?
-    @Published var isPlaying: Bool = false
+    
+    @Published var status : AudioControllerStatus = .stopped
+    @Published var statusString : String = "Not Playing"
 
     private var subscriptions: Set<AnyCancellable> = Set<AnyCancellable>()
     
@@ -33,6 +34,8 @@ final class AudioController: ObservableObject {
     }
     
     func start(url: URL) {
+        stop()
+        
         let asset = AVAsset(url: url)
         let playerItem = AVPlayerItem(
             asset: asset,
@@ -42,20 +45,23 @@ final class AudioController: ObservableObject {
         playerItem.publisher(for: \.status)
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
+            .sink { [weak self] playerItemStatus in
                 guard let self else { return }
-                switch status {
+                switch playerItemStatus {
                 case .readyToPlay:
-                    nowPlayingInfo = radioStation?.title
-                    player.play()
-                    isPlaying = true
+                    status = .playing
+                    statusString = radioStation!.title
+
                 case .failed:
-                    nowPlayingInfo = "Load failed."
-                    isPlaying = false
+                    if (playerItem.error as NSError?) != nil {
+                        status = .failed
+                        statusString = "Load failed."
+                    }
                 case .unknown:
-                    nowPlayingInfo = "Loading..."
-                    isPlaying = false
+                    status = .loading
+                    statusString = "Loading..."
                 default:
+                    statusString = "Not Playing."
                     break
                 }
             }
@@ -64,35 +70,30 @@ final class AudioController: ObservableObject {
         // Set the item as the player's current item.
         player.replaceCurrentItem(with: playerItem)
         player.play()
-        isPlaying = nowPlayingInfo == radioStation?.title
     }
     
     func setVolume(volume: Float) {
         player.volume = volume
     }
-    
-    private func observePlayingState() {
-        player.publisher(for: \.timeControlStatus)
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .playing }
-            .assign(to: &$isPlaying)
-    }
 
     func play() {
         if player.currentItem?.status == .readyToPlay {
             player.play()
-            isPlaying = true
         }
     }
 
     func stop() {
         player.pause()
-        reset()
+        radioStation = nil
+        status = .stopped
+        player = AVPlayer()
     }
 
-    func reset() {
-        isPlaying = false
-        radioStation = nil
-        nowPlayingInfo = nil
-    }
+}
+
+enum AudioControllerStatus : Equatable {
+    case playing
+    case loading
+    case failed
+    case stopped
 }

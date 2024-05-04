@@ -32,8 +32,8 @@ struct MenuBarView: View {
                 Text("NetTuner").font(.largeTitle)
                 Label("", systemImage: "wave.3.forward")
                     .symbolEffect(.bounce.up.byLayer,
-                                  options: audioController.isPlaying ? .repeating : .nonRepeating,
-                                  value: audioController.isPlaying)
+                                  options: audioController.status == AudioControllerStatus.playing ? .repeating : .nonRepeating,
+                                  value: audioController.status)
                     .font(.title)
                 Spacer()
                 Menu {
@@ -65,7 +65,16 @@ struct MenuBarView: View {
                                 .background(radio == selectedRadio ? Color.accentColor : nil)
                             
                             if radio == selectedRadio {
-                                Image(systemName: "speaker.wave.3.fill")
+                                switch audioController.status {
+                                case .playing:
+                                    Image(systemName: "speaker.wave.3.fill")
+                                case .loading:
+                                    Image(systemName: "network").symbolEffect(.pulse)
+                                case .failed:
+                                    Image(systemName: "network.slash")
+                                default:
+                                    EmptyView()
+                                }
                             }
                             
                         }
@@ -86,10 +95,10 @@ struct MenuBarView: View {
                         audioController.stop()
                         stopAnimationToggle.toggle()
                     }) {
-                        Label(audioController.nowPlayingInfo ?? "Not Playing", systemImage: "stop.circle")
+                        Label(audioController.statusString, systemImage: "stop.circle")
                             .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
                             .font(.largeTitle)
-                    }.disabled(!audioController.isPlaying)
+                    }.disabled(audioController.status != .playing)
                         .buttonStyle(PlainButtonStyle())
                     
                     Spacer()
