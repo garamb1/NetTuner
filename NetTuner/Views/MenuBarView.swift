@@ -11,7 +11,7 @@ import SwiftData
 struct MenuBarView: View {
     @Environment(\.openWindow) var openWindow
 
-    @ObservedObject var audioController: AudioController = AudioController()
+    @State var audioController: AudioController = AudioController()
     @State private var volume: Float = 1.0
 
     @Environment(\.modelContext) var modelContext
@@ -20,7 +20,7 @@ struct MenuBarView: View {
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
     
     // Animation Toggles
-    @State private var stopAnimationToggle: Bool = false
+    @State private var playPauseAnimationToggle: Bool = false
     
     var sortedRadios: [RadioStation] {
         radios.sorted(using: radioSortOrder)
@@ -90,16 +90,30 @@ struct MenuBarView: View {
             
             VStack {
                 HStack {
-                    Button(action: {
-                        selectedRadio = nil
-                        audioController.stop()
-                        stopAnimationToggle.toggle()
-                    }) {
-                        Label(audioController.statusString, systemImage: "stop.circle")
-                            .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
-                            .font(.largeTitle)
-                    }.disabled(audioController.status != .playing)
-                        .buttonStyle(PlainButtonStyle())
+                    switch audioController.status {
+                    case .paused:
+                        Button(action: {
+                            audioController.play()
+                            playPauseAnimationToggle.toggle()
+                        }) {
+                            Label(audioController.statusString, systemImage: "play.circle")
+                                .symbolEffect(.bounce, options: .speed(3), value: playPauseAnimationToggle)
+                                .font(.largeTitle)
+                        }.buttonStyle(PlainButtonStyle())
+                    
+                    case .playing:
+                        Button(action: {
+                            audioController.pause()
+                            playPauseAnimationToggle.toggle()
+                        }) {
+                            Label(audioController.statusString, systemImage: "pause.circle")
+                                .symbolEffect(.bounce, options: .speed(3), value: playPauseAnimationToggle)
+                                .font(.largeTitle)
+                        }.buttonStyle(PlainButtonStyle())
+
+                    default:
+                        Label(audioController.statusString, systemImage: "music.note").font(.largeTitle)
+                    }
                     
                     Spacer()
                 }.padding()
