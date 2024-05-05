@@ -38,11 +38,9 @@ final class AudioController {
     
     func start(urlString: String) {
         let testUrl: URL? = URL(string: urlString)
-        if testUrl == nil {
-            return
+        if testUrl != nil {
+            start(url: testUrl!)
         }
-
-        start(url: testUrl!)
     }
     
     func start(url: URL) {

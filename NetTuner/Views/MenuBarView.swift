@@ -18,10 +18,7 @@ struct MenuBarView: View {
     @Query private var radios: [RadioStation]
     @State private var selectedRadio: RadioStation?
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
-    
-    // Animation Toggles
-    @State private var playPauseAnimationToggle: Bool = false
-    
+
     var sortedRadios: [RadioStation] {
         radios.sorted(using: radioSortOrder)
     }
@@ -94,27 +91,35 @@ struct MenuBarView: View {
                     case .paused:
                         Button(action: {
                             audioController.play()
-                            playPauseAnimationToggle.toggle()
                         }) {
-                            Label(audioController.statusString, systemImage: "play.circle")
-                                .symbolEffect(.bounce, options: .speed(3), value: playPauseAnimationToggle)
+                            Image(systemName: "play.circle")
                                 .font(.largeTitle)
                         }.buttonStyle(PlainButtonStyle())
                     
                     case .playing:
                         Button(action: {
                             audioController.pause()
-                            playPauseAnimationToggle.toggle()
                         }) {
-                            Label(audioController.statusString, systemImage: "pause.circle")
-                                .symbolEffect(.bounce, options: .speed(3), value: playPauseAnimationToggle)
+                            Image(systemName: "pause.circle")
                                 .font(.largeTitle)
                         }.buttonStyle(PlainButtonStyle())
 
+                    case .loading:
+                        Image(systemName: "network")
+                            .symbolEffect(.pulse)
+                            .font(.largeTitle)
+                        
+                    case .failed:
+                        Image(systemName: "network.slash")
+                            .symbolEffect(.pulse)
+                            .font(.largeTitle)
+                        
                     default:
-                        Label(audioController.statusString, systemImage: "music.note").font(.largeTitle)
+                        Image(systemName: "music.note").font(.largeTitle)
                     }
-                    
+
+                    Text(audioController.statusString).font(.largeTitle)
+
                     Spacer()
                 }.padding()
                     .cornerRadius(20) /// make the background rounded
