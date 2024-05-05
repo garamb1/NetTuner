@@ -59,7 +59,6 @@ struct MenuBarView: View {
                     ForEach(sortedRadios, id: \.self) { radio in
                         HStack {
                             Text(radio.title)
-                                .background(radio == selectedRadio ? Color.accentColor : nil)
                             
                             if radio == selectedRadio {
                                 switch audioController.status {
