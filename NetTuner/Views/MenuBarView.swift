@@ -11,17 +11,14 @@ import SwiftData
 struct MenuBarView: View {
     @Environment(\.openWindow) var openWindow
 
-    @ObservedObject var audioController: AudioController = AudioController()
+    @State var audioController: AudioController = AudioController()
     @State private var volume: Float = 1.0
 
     @Environment(\.modelContext) var modelContext
     @Query private var radios: [RadioStation]
     @State private var selectedRadio: RadioStation?
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
-    
-    // Animation Toggles
-    @State private var stopAnimationToggle: Bool = false
-    
+
     var sortedRadios: [RadioStation] {
         radios.sorted(using: radioSortOrder)
     }
@@ -62,7 +59,6 @@ struct MenuBarView: View {
                     ForEach(sortedRadios, id: \.self) { radio in
                         HStack {
                             Text(radio.title)
-                                .background(radio == selectedRadio ? Color.accentColor : nil)
                             
                             if radio == selectedRadio {
                                 switch audioController.status {
@@ -90,17 +86,39 @@ struct MenuBarView: View {
             
             VStack {
                 HStack {
-                    Button(action: {
-                        selectedRadio = nil
-                        audioController.stop()
-                        stopAnimationToggle.toggle()
-                    }) {
-                        Label(audioController.statusString, systemImage: "stop.circle")
-                            .symbolEffect(.bounce, options: .speed(3), value: stopAnimationToggle)
-                            .font(.largeTitle)
-                    }.disabled(audioController.status != .playing)
-                        .buttonStyle(PlainButtonStyle())
+                    switch audioController.status {
+                    case .paused:
+                        Button(action: {
+                            audioController.play()
+                        }) {
+                            Image(systemName: "play.circle")
+                                .font(.largeTitle)
+                        }.buttonStyle(PlainButtonStyle())
                     
+                    case .playing:
+                        Button(action: {
+                            audioController.pause()
+                        }) {
+                            Image(systemName: "pause.circle")
+                                .font(.largeTitle)
+                        }.buttonStyle(PlainButtonStyle())
+
+                    case .loading:
+                        Image(systemName: "network")
+                            .symbolEffect(.pulse)
+                            .font(.largeTitle)
+                        
+                    case .failed:
+                        Image(systemName: "network.slash")
+                            .symbolEffect(.pulse)
+                            .font(.largeTitle)
+                        
+                    default:
+                        Image(systemName: "music.note").font(.largeTitle)
+                    }
+
+                    Text(audioController.statusString).font(.largeTitle)
+
                     Spacer()
                 }.padding()
                     .cornerRadius(20) /// make the background rounded

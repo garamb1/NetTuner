@@ -9,13 +9,25 @@ import Combine
 import AVFoundation
 import AVKit
 
-final class AudioController: ObservableObject {
+@Observable
+final class AudioController {
 
     private var player : AVPlayer = AVPlayer()
     private var radioStation : RadioStation? = nil
     
-    @Published var status : AudioControllerStatus = .stopped
-    @Published var statusString : String = "Not Playing"
+    var status : AudioControllerStatus = .stopped
+    var statusString : String {
+        switch status {
+        case .playing, .paused:
+            return radioStation!.title
+        case .loading, .ready:
+            return "Loading..."
+        case .failed:
+            return "Load failed"
+        case .stopped:
+            return "Not Playing"
+        }
+    }
 
     private var subscriptions: Set<AnyCancellable> = Set<AnyCancellable>()
     
@@ -26,11 +38,9 @@ final class AudioController: ObservableObject {
     
     func start(urlString: String) {
         let testUrl: URL? = URL(string: urlString)
-        if testUrl == nil {
-            return
+        if testUrl != nil {
+            start(url: testUrl!)
         }
-
-        start(url: testUrl!)
     }
     
     func start(url: URL) {
@@ -41,6 +51,7 @@ final class AudioController: ObservableObject {
             asset: asset,
             automaticallyLoadedAssetKeys: [.tracks, .duration, .commonMetadata]
         )
+        
         // Register to observe the status property before associating with player.
         playerItem.publisher(for: \.status)
             .removeDuplicates()
@@ -49,19 +60,16 @@ final class AudioController: ObservableObject {
                 guard let self else { return }
                 switch playerItemStatus {
                 case .readyToPlay:
-                    status = .playing
-                    statusString = radioStation!.title
-
+                    status = .ready
+                    play()
                 case .failed:
                     if (playerItem.error as NSError?) != nil {
                         status = .failed
-                        statusString = "Load failed."
                     }
+                    return
                 case .unknown:
                     status = .loading
-                    statusString = "Loading..."
                 default:
-                    statusString = "Not Playing."
                     break
                 }
             }
@@ -69,7 +77,7 @@ final class AudioController: ObservableObject {
         
         // Set the item as the player's current item.
         player.replaceCurrentItem(with: playerItem)
-        player.play()
+//        player.play()
     }
     
     func setVolume(volume: Float) {
@@ -77,23 +85,30 @@ final class AudioController: ObservableObject {
     }
 
     func play() {
-        if player.currentItem?.status == .readyToPlay {
+        if status == .ready || status == .paused {
             player.play()
+            status = .playing
         }
     }
 
-    func stop() {
+    func pause() {
         player.pause()
+        status = .paused
+    }
+
+    func stop() {
         radioStation = nil
         status = .stopped
         player = AVPlayer()
     }
-
+    
 }
 
 enum AudioControllerStatus : Equatable {
+    case ready
     case playing
     case loading
     case failed
+    case paused
     case stopped
 }
