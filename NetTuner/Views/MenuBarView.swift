@@ -67,7 +67,9 @@ struct MenuBarView: View {
                             if radio == selectedRadio {
                                 switch audioController.status {
                                 case .playing:
-                                    Image(systemName: "speaker.wave.3.fill")
+                                    Image(systemName: "play.fill")
+                                case .paused:
+                                    Image(systemName: "pause.fill")
                                 case .loading:
                                     Image(systemName: "network").symbolEffect(.pulse)
                                 case .failed:
@@ -91,6 +93,21 @@ struct MenuBarView: View {
             // Playback controls
             VStack {
                 HStack {
+                    
+                    switch audioController.status {
+                    case .playing, .paused:
+                        Button(action: {
+                            selectedRadio = nil
+                            audioController.stop()
+                        }) {
+                            Image(systemName: "stop.circle")
+                                .font(.title)
+                        }.buttonStyle(PlainButtonStyle())
+                    default:
+                        EmptyView()
+                    }
+
+
                     switch audioController.status {
                     case .paused:
                         Button(action: {
@@ -122,7 +139,7 @@ struct MenuBarView: View {
                         Image(systemName: "music.note").font(.largeTitle)
                     }
 
-                    Text(audioController.statusString).font(.largeTitle)
+                    Text(audioController.statusString).font(.title)
 
                     Spacer()
                 }.padding()
@@ -143,6 +160,7 @@ struct MenuBarView: View {
             }.padding()
 
         }.background()
+
     }
 }
 
