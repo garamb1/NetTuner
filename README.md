@@ -9,3 +9,6 @@ A SwiftUI Menu Bar Application for playing and managing your favourite web radio
 
 ## Features
 Audio streaming using Apple AVPlayer, SwiftData for storage.
+
+## License
+Published under the GNU General Public License V3 (GPL v3).
