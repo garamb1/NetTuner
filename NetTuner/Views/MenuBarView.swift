@@ -11,7 +11,7 @@ import SwiftData
 struct MenuBarView: View {
     @Environment(\.openWindow) var openWindow
 
-    @State var audioController: AudioController = AudioController()
+    @Environment(AudioController.self) private var audioController
     @State private var volume: Float = 1.0
 
     @Environment(\.modelContext) var modelContext
@@ -25,6 +25,8 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack {
+            
+            // Header
             HStack {
                 Text("NetTuner").font(.largeTitle)
                 Label("", systemImage: "wave.3.forward")
@@ -35,13 +37,14 @@ struct MenuBarView: View {
                 Spacer()
                 Menu {
                     Button(action: {
+                        NSApplication.shared.activate(ignoringOtherApps: true)
                         openWindow(id: "settings")
                     }) {
                         Text("Radio Stations")
                     }.keyboardShortcut(",", modifiers: .command)
                     
                     Button(action: {
-                        exit(0)
+                        NSApplication.shared.terminate(nil)
                     }) {
                         Text("Quit")
                     }.keyboardShortcut("q", modifiers: .command)
@@ -54,6 +57,7 @@ struct MenuBarView: View {
             }.frame(maxWidth: .infinity, alignment: .center)
              .padding()
 
+            // Radio List
             if !sortedRadios.isEmpty {
                 List(selection: $selectedRadio) {
                     ForEach(sortedRadios, id: \.self) { radio in
@@ -84,6 +88,7 @@ struct MenuBarView: View {
                     .padding(.horizontal)
             }
             
+            // Playback controls
             VStack {
                 HStack {
                     switch audioController.status {
