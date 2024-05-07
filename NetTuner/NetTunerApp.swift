@@ -11,11 +11,22 @@ import CoreData
 @main
 struct NetTunerApp: App {
     
+    @State var audioController: AudioController = AudioController()
+    
     var body: some Scene {
         
-        MenuBarExtra("NetTuner", systemImage: "radio") {
+        MenuBarExtra {
             MenuBarView()
                 .modelContainer(for: RadioStation.self)
+                .environment(audioController)
+        } label: {
+            HStack {
+                if audioController.status == .playing {
+                    Image(systemName: "radio.fill")
+                } else {
+                    Image(systemName: "radio")
+                }
+            }
         }
         .menuBarExtraStyle(.window)
         .defaultSize(width: 300, height: 350)
