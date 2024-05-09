@@ -37,7 +37,6 @@ struct MenuBarView: View {
                 Spacer()
                 Menu {
                     Button(action: {
-                        NSApplication.shared.activate(ignoringOtherApps: true)
                         NSApplication.shared.orderFrontStandardAboutPanel()
                     }) {
                         Text("About")
@@ -99,20 +98,6 @@ struct MenuBarView: View {
             // Playback controls
             VStack {
                 HStack {
-                    
-                    switch audioController.status {
-                    case .playing, .paused:
-                        Button(action: {
-                            selectedRadio = nil
-                            audioController.stop()
-                        }) {
-                            Image(systemName: "stop.circle")
-                                .font(.title)
-                        }.buttonStyle(PlainButtonStyle())
-                    default:
-                        EmptyView()
-                    }
-
 
                     switch audioController.status {
                     case .paused:
@@ -144,6 +129,22 @@ struct MenuBarView: View {
                     default:
                         Image(systemName: "music.note").font(.largeTitle)
                     }
+
+                    
+                    switch audioController.status {
+                    case .playing, .paused:
+                        Button(action: {
+                            selectedRadio = nil
+                            audioController.stop()
+                        }) {
+                            Image(systemName: "stop.circle")
+                                .font(.title)
+                        }.buttonStyle(PlainButtonStyle())
+                    default:
+                        EmptyView()
+                    }
+                    
+                    Spacer()
 
                     Text(audioController.statusString).font(.title)
 
