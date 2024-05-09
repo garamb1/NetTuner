@@ -37,6 +37,11 @@ struct MenuBarView: View {
                 Spacer()
                 Menu {
                     Button(action: {
+                        NSApplication.shared.orderFrontStandardAboutPanel()
+                    }) {
+                        Text("About")
+                    }
+                    Button(action: {
                         NSApplication.shared.activate(ignoringOtherApps: true)
                         openWindow(id: "settings")
                     }) {
@@ -93,20 +98,6 @@ struct MenuBarView: View {
             // Playback controls
             VStack {
                 HStack {
-                    
-                    switch audioController.status {
-                    case .playing, .paused:
-                        Button(action: {
-                            selectedRadio = nil
-                            audioController.stop()
-                        }) {
-                            Image(systemName: "stop.circle")
-                                .font(.title)
-                        }.buttonStyle(PlainButtonStyle())
-                    default:
-                        EmptyView()
-                    }
-
 
                     switch audioController.status {
                     case .paused:
@@ -139,6 +130,22 @@ struct MenuBarView: View {
                         Image(systemName: "music.note").font(.largeTitle)
                     }
 
+                    
+                    switch audioController.status {
+                    case .playing, .paused:
+                        Button(action: {
+                            selectedRadio = nil
+                            audioController.stop()
+                        }) {
+                            Image(systemName: "stop.circle")
+                                .font(.title)
+                        }.buttonStyle(PlainButtonStyle())
+                    default:
+                        EmptyView()
+                    }
+                    
+                    Spacer()
+
                     Text(audioController.statusString).font(.title)
 
                     Spacer()
@@ -148,6 +155,7 @@ struct MenuBarView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(.gray, lineWidth: 1)
                     )
+                    .background(.ultraThinMaterial)
                 
                 HStack {
                     Image(systemName: "speaker.fill")

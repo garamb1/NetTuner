@@ -1,5 +1,5 @@
 //
-//  PreferenceView.swift
+//  SettingsView.swift
 //  NetTuner
 //
 //  Created by Vincenzo Garambone on 16/04/24.
@@ -43,7 +43,7 @@ struct SettingsView: View {
                 Text("\(radio.url)")
             }
         }
-            .searchable(text: $searchText)
+        .searchable(text: $searchText)
         .toolbar {
             ToolbarItem() {
                 Button("Add", systemImage: "plus", action: {
@@ -61,6 +61,10 @@ struct SettingsView: View {
     }
     
     func deleteSelection() {
+        if selectedRadios.count < 1 {
+            return
+        }
+        
         try? modelContext.delete(
             model: RadioStation.self,
             where: #Predicate{
@@ -80,8 +84,8 @@ struct AddRadioView : View {
     var body: some View {
         VStack {
             Form {
-                TextField("Radio Station:", text: $title)
-                TextField("URL:", text: $urlString)
+                TextField("Radio Station:", text: $title).lineLimit(1)
+                TextField("URL:", text: $urlString).lineLimit(1)
             }.padding()
             
             HStack {
