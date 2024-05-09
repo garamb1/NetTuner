@@ -80,7 +80,6 @@
 		035844652BCD2EF50021863E = {
 			isa = PBXGroup;
 			children = (
-				03AD652D2BECAF90004A25C4 /* Credits.rtf */,
 				035844702BCD2EF50021863E /* NetTuner */,
 				0358446F2BCD2EF50021863E /* Products */,
 			);
@@ -102,6 +101,7 @@
 				030748AC2BCD89160092FD7D /* Views */,
 				030748AB2BCD89080092FD7D /* Controller */,
 				035844852BCD34940021863E /* Info.plist */,
+				03AD652D2BECAF90004A25C4 /* Credits.rtf */,
 				035844712BCD2EF50021863E /* NetTunerApp.swift */,
 				035844752BCD2EF60021863E /* Assets.xcassets */,
 				0358447A2BCD2EF60021863E /* NetTuner.entitlements */,
