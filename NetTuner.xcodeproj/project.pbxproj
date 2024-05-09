@@ -15,6 +15,7 @@
 		035844792BCD2EF60021863E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035844782BCD2EF60021863E /* Preview Assets.xcassets */; };
 		035844842BCD31860021863E /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844832BCD31860021863E /* AudioController.swift */; };
 		0388364B2BCE63E2007E2F06 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0388364A2BCE63E2007E2F06 /* SettingsView.swift */; };
+		03AD652E2BECAF90004A25C4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 03AD652D2BECAF90004A25C4 /* Credits.rtf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		035844832BCD31860021863E /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		035844852BCD34940021863E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0388364A2BCE63E2007E2F06 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		03AD652D2BECAF90004A25C4 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 		035844652BCD2EF50021863E = {
 			isa = PBXGroup;
 			children = (
+				03AD652D2BECAF90004A25C4 /* Credits.rtf */,
 				035844702BCD2EF50021863E /* NetTuner */,
 				0358446F2BCD2EF50021863E /* Products */,
 			);
@@ -178,6 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				035844792BCD2EF60021863E /* Preview Assets.xcassets in Resources */,
+				03AD652E2BECAF90004A25C4 /* Credits.rtf in Resources */,
 				035844762BCD2EF60021863E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,7 +340,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NetTuner/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (C) 2024 Vincenzo Garambone";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -368,7 +372,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NetTuner/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (C) 2024 Vincenzo Garambone";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

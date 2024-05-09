@@ -38,6 +38,12 @@ struct MenuBarView: View {
                 Menu {
                     Button(action: {
                         NSApplication.shared.activate(ignoringOtherApps: true)
+                        NSApplication.shared.orderFrontStandardAboutPanel()
+                    }) {
+                        Text("About")
+                    }
+                    Button(action: {
+                        NSApplication.shared.activate(ignoringOtherApps: true)
                         openWindow(id: "settings")
                     }) {
                         Text("Radio Stations")
@@ -148,6 +154,7 @@ struct MenuBarView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(.gray, lineWidth: 1)
                     )
+                    .background(.ultraThinMaterial)
                 
                 HStack {
                     Image(systemName: "speaker.fill")
