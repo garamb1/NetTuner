@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SwiftCSV
 
 struct SettingsView: View {
 
@@ -19,8 +20,9 @@ struct SettingsView: View {
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
     @State private var searchText: String = ""
     
-    // Addition popover
+    // Addition & import popover
     @State private var showingAddPopover = false;
+    @State private var showingImportPopover = false;
     
     var filteredRadios : [RadioStation] {
         if searchText.count < 2 {
@@ -56,6 +58,13 @@ struct SettingsView: View {
                 Button("Remove", systemImage: "minus", action: {
                     deleteSelection()
                 }).disabled(radios.isEmpty)
+            }
+            ToolbarItem() {
+                Button("Add", systemImage: "square.and.arrow.down", action: {
+                    showingImportPopover = true
+                }).popover(isPresented: $showingImportPopover, content: {
+                    ImportView()
+                })
             }
         }
     }
@@ -116,6 +125,67 @@ struct AddRadioView : View {
     func resetInputs() {
         title = ""
         urlString = ""
+    }
+}
+
+
+struct ImportView : View {
+    @State private var importing = false
+    @State private var processing = false;
+    @State private var importError : String?;
+    
+    @Environment(\.modelContext) var modelContext
+
+    var body: some View {
+        VStack {
+            Text("Import a CSV Radio List").font(.title)
+            
+            if processing {
+                HStack {
+                    ProgressView()
+                    Text("Importing...")
+                }.padding()
+                    .interactiveDismissDisabled()
+            } else {
+                HStack {
+                    Text("Choose a file...")
+                    Button("Import") {
+                        importing = true
+                    }
+                    .fileImporter(
+                        isPresented: $importing,
+                        allowedContentTypes: [.plainText, .commaSeparatedText]
+                    ) { result in
+                        switch result {
+                        case .success(let file):
+                            processing = true
+                            loadFromCsv(fileUrl: file)
+                        case .failure(let error):
+                            importError = "Access Error"
+                        }
+                    }
+                }.padding()
+            }
+        }.padding()
+    }
+    
+    func loadFromCsv(fileUrl : URL) {
+        
+        do {
+            let csvFile: CSV = try CSV<Named>(url:fileUrl)
+            for row in csvFile.rows {
+                let url = URL(string: row["url"]!)
+                let newRadio = RadioStation(url: url!, title: row["title"]!)
+                addRadioStation(radioStation: newRadio)
+            }
+        } catch {
+            print(error)
+        }
+        processing = false
+    }
+    
+    func addRadioStation(radioStation: RadioStation) {
+        modelContext.insert(radioStation)
     }
 }
 
