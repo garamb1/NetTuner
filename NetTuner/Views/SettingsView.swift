@@ -103,38 +103,29 @@ struct AddRadioView : View {
                     dismiss()
                 }).keyboardShortcut(.cancelAction)
                 Button("Add", action: {
-                    let url = URL(string: urlString)
-                    if (url != nil) {
-                        let newRadio = RadioStation(url: url!, title: title)
-                        addRadioStation(radioStation: newRadio)
-                        resetInputs()
-                        dismiss()
+                    guard let url = URL(string: urlString), url.host != nil 
+                    else {
+                        return
                     }
+                    let newRadio = RadioStation(url: url, title: title)
+                    modelContext.insert(newRadio)
                 })
                 .disabled(title.isEmpty && urlString.isEmpty)
                 .keyboardShortcut(.defaultAction)
             }.padding()
         }.frame(minWidth: 300)
     }
-    
-    
-    func addRadioStation(radioStation: RadioStation) {
-        modelContext.insert(radioStation)
-    }
-    
-    func resetInputs() {
-        title = ""
-        urlString = ""
-    }
+
 }
 
 
 struct ImportView : View {
     @State private var importing = false
-    @State private var processing = false;
-    @State private var importError : String?;
+    @State private var processing = false
+    @State private var doneProcessingMessage: String?
     
     @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack {
@@ -145,7 +136,15 @@ struct ImportView : View {
                     ProgressView()
                     Text("Importing...")
                 }.padding()
-                    .interactiveDismissDisabled()
+                 .interactiveDismissDisabled()
+            } else if doneProcessingMessage != nil {
+                HStack {
+                    Text(doneProcessingMessage!)
+                    Button("OK", action: {
+                        dismiss()
+                    })
+                }.padding()
+                .interactiveDismissDisabled()
             } else {
                 HStack {
                     Text("Choose a file...")
@@ -160,8 +159,9 @@ struct ImportView : View {
                         case .success(let file):
                             processing = true
                             loadFromCsv(fileUrl: file)
-                        case .failure(let error):
-                            importError = "Access Error"
+                        case .failure:
+                            processing = false
+                            doneProcessingMessage = "Could not read the CSV file."
                         }
                     }
                 }.padding()
@@ -169,23 +169,43 @@ struct ImportView : View {
         }.padding()
     }
     
-    func loadFromCsv(fileUrl : URL) {
+    func loadFromCsv(fileUrl: URL) {
+        var toAdd : Set<RadioStation> = Set()
+        var parsingErrors = 0
         
         do {
             let csvFile: CSV = try CSV<Named>(url:fileUrl)
             for row in csvFile.rows {
-                let url = URL(string: row["url"]!)
-                let newRadio = RadioStation(url: url!, title: row["title"]!)
-                addRadioStation(radioStation: newRadio)
+                
+                guard let itemUrl = row["url"], let itemTitle = row["title"]
+                else {
+                    parsingErrors += 1
+                    continue
+                }
+
+                guard let url = URL(string: itemUrl), url.host != nil
+                else {
+                    parsingErrors += 1
+                    continue
+                }
+                toAdd.insert(RadioStation(url: url, title: itemTitle))
             }
         } catch {
-            print(error)
+            processing = false
+            doneProcessingMessage = "Could not read the CSV file."
+            return
         }
+        
+        for newRadio in toAdd {
+            modelContext.insert(newRadio)
+        }
+
         processing = false
-    }
-    
-    func addRadioStation(radioStation: RadioStation) {
-        modelContext.insert(radioStation)
+        doneProcessingMessage = "Found \(toAdd.count) entries in file"
+
+        if parsingErrors > 0 {
+            doneProcessingMessage! += "\n\(parsingErrors) could not be added."
+        }
     }
 }
 
