@@ -118,7 +118,6 @@ struct AddRadioView : View {
 
 }
 
-
 struct ImportView : View {
     @State private var importing = false
     @State private var processing = false
@@ -129,12 +128,10 @@ struct ImportView : View {
 
     var body: some View {
         VStack {
-            Text("Import a CSV Radio List").font(.title)
-            
+            Text("Import a CSV Radio List").font(.headline)
             if processing {
                 HStack {
                     ProgressView()
-                    Text("Importing...")
                 }.padding()
                  .interactiveDismissDisabled()
             } else if doneProcessingMessage != nil {
@@ -142,19 +139,18 @@ struct ImportView : View {
                     Text(doneProcessingMessage!)
                     Button("OK", action: {
                         dismiss()
-                    })
+                    }).keyboardShortcut(.defaultAction)
                 }.padding()
                 .interactiveDismissDisabled()
             } else {
                 HStack {
-                    Text("Choose a file...")
-                    Button("Import") {
+                    Text("Choose a file:")
+                    Button("Open...") {
                         importing = true
                     }
                     .fileImporter(
                         isPresented: $importing,
-                        allowedContentTypes: [.plainText, .commaSeparatedText]
-                    ) { result in
+                        allowedContentTypes: [.plainText, .commaSeparatedText]) { result in
                         switch result {
                         case .success(let file):
                             processing = true
