@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		030748BD2BCD8D980092FD7D /* RadioStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030748BC2BCD8D980092FD7D /* RadioStation.swift */; };
 		030BE24A2BCEB624000BDF4B /* NSApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BE2492BCEB624000BDF4B /* NSApplicationExtension.swift */; };
+		0338782F2BEF5191001CEB6F /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 0338782E2BEF5191001CEB6F /* SwiftCSV */; };
 		035844722BCD2EF50021863E /* NetTunerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844712BCD2EF50021863E /* NetTunerApp.swift */; };
 		035844742BCD2EF50021863E /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844732BCD2EF50021863E /* MenuBarView.swift */; };
 		035844762BCD2EF60021863E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035844752BCD2EF60021863E /* Assets.xcassets */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		030748BC2BCD8D980092FD7D /* RadioStation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioStation.swift; sourceTree = "<group>"; };
 		030BE2492BCEB624000BDF4B /* NSApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSApplicationExtension.swift; sourceTree = "<group>"; };
+		033878302BEF54B4001CEB6F /* NetTunerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetTunerDebug.entitlements; sourceTree = "<group>"; };
 		0358446E2BCD2EF50021863E /* NetTuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetTuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035844712BCD2EF50021863E /* NetTunerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetTunerApp.swift; sourceTree = "<group>"; };
 		035844732BCD2EF50021863E /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -38,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0338782F2BEF5191001CEB6F /* SwiftCSV in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +99,7 @@
 		035844702BCD2EF50021863E /* NetTuner */ = {
 			isa = PBXGroup;
 			children = (
+				033878302BEF54B4001CEB6F /* NetTunerDebug.entitlements */,
 				030BE2482BCEB619000BDF4B /* Extensions */,
 				030748AD2BCD89280092FD7D /* Data */,
 				030748AC2BCD89160092FD7D /* Views */,
@@ -135,6 +139,7 @@
 			);
 			name = NetTuner;
 			packageProductDependencies = (
+				0338782E2BEF5191001CEB6F /* SwiftCSV */,
 			);
 			productName = NetTuner;
 			productReference = 0358446E2BCD2EF50021863E /* NetTuner.app */;
@@ -165,6 +170,7 @@
 			);
 			mainGroup = 035844652BCD2EF50021863E;
 			packageReferences = (
+				0338782D2BEF5191001CEB6F /* XCRemoteSwiftPackageReference "SwiftCSV" */,
 			);
 			productRefGroup = 0358446F2BCD2EF50021863E /* Products */;
 			projectDirPath = "";
@@ -328,7 +334,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = NetTuner/NetTuner.entitlements;
+				CODE_SIGN_ENTITLEMENTS = NetTuner/NetTunerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
@@ -409,6 +415,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0338782D2BEF5191001CEB6F /* XCRemoteSwiftPackageReference "SwiftCSV" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftcsv/SwiftCSV.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0338782E2BEF5191001CEB6F /* SwiftCSV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0338782D2BEF5191001CEB6F /* XCRemoteSwiftPackageReference "SwiftCSV" */;
+			productName = SwiftCSV;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 035844662BCD2EF50021863E /* Project object */;
 }

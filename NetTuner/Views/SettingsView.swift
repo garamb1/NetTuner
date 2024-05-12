@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SwiftCSV
 
 struct SettingsView: View {
 
@@ -19,8 +20,9 @@ struct SettingsView: View {
     @State private var radioSortOrder = [KeyPathComparator(\RadioStation.title)]
     @State private var searchText: String = ""
     
-    // Addition popover
+    // Addition & import popover
     @State private var showingAddPopover = false;
+    @State private var showingImportPopover = false;
     
     var filteredRadios : [RadioStation] {
         if searchText.count < 2 {
@@ -56,6 +58,13 @@ struct SettingsView: View {
                 Button("Remove", systemImage: "minus", action: {
                     deleteSelection()
                 }).disabled(radios.isEmpty)
+            }
+            ToolbarItem() {
+                Button("Add", systemImage: "square.and.arrow.down", action: {
+                    showingImportPopover = true
+                }).popover(isPresented: $showingImportPopover, content: {
+                    ImportView()
+                })
             }
         }
     }
@@ -94,28 +103,105 @@ struct AddRadioView : View {
                     dismiss()
                 }).keyboardShortcut(.cancelAction)
                 Button("Add", action: {
-                    let url = URL(string: urlString)
-                    if (url != nil) {
-                        let newRadio = RadioStation(url: url!, title: title)
-                        addRadioStation(radioStation: newRadio)
-                        resetInputs()
-                        dismiss()
+                    guard let url = URL(string: urlString), url.host != nil 
+                    else {
+                        return
                     }
+                    let newRadio = RadioStation(url: url, title: title)
+                    modelContext.insert(newRadio)
                 })
                 .disabled(title.isEmpty && urlString.isEmpty)
                 .keyboardShortcut(.defaultAction)
             }.padding()
         }.frame(minWidth: 300)
     }
+
+}
+
+struct ImportView : View {
+    @State private var importing = false
+    @State private var processing = false
+    @State private var doneProcessingMessage: String?
     
-    
-    func addRadioStation(radioStation: RadioStation) {
-        modelContext.insert(radioStation)
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        VStack {
+            Text("Import a CSV Radio List").font(.headline)
+            if processing {
+                HStack {
+                    ProgressView()
+                }.padding()
+                 .interactiveDismissDisabled()
+            } else if doneProcessingMessage != nil {
+                HStack {
+                    Text(doneProcessingMessage!)
+                    Button("OK", action: {
+                        dismiss()
+                    }).keyboardShortcut(.defaultAction)
+                }.padding()
+                .interactiveDismissDisabled()
+            } else {
+                HStack {
+                    Text("Choose a file:")
+                    Button("Open...") {
+                        importing = true
+                    }
+                    .fileImporter(
+                        isPresented: $importing,
+                        allowedContentTypes: [.plainText, .commaSeparatedText]) { result in
+                        switch result {
+                        case .success(let file):
+                            processing = true
+                            loadFromCsv(fileUrl: file)
+                        case .failure:
+                            processing = false
+                            doneProcessingMessage = "Could not read the CSV file."
+                        }
+                    }
+                }.padding()
+            }
+        }.padding()
     }
     
-    func resetInputs() {
-        title = ""
-        urlString = ""
+    func loadFromCsv(fileUrl: URL) {
+        var toAdd : Set<RadioStation> = Set()
+        var parsingErrors = 0
+        
+        do {
+            let csvFile: CSV = try CSV<Named>(url:fileUrl)
+            for row in csvFile.rows {
+                
+                guard let itemUrl = row["url"], let itemTitle = row["title"]
+                else {
+                    parsingErrors += 1
+                    continue
+                }
+
+                guard let url = URL(string: itemUrl), url.host != nil
+                else {
+                    parsingErrors += 1
+                    continue
+                }
+                toAdd.insert(RadioStation(url: url, title: itemTitle))
+            }
+        } catch {
+            processing = false
+            doneProcessingMessage = "Could not read the CSV file."
+            return
+        }
+        
+        for newRadio in toAdd {
+            modelContext.insert(newRadio)
+        }
+
+        processing = false
+        doneProcessingMessage = "Found \(toAdd.count) entries in file"
+
+        if parsingErrors > 0 {
+            doneProcessingMessage! += "\n\(parsingErrors) could not be added."
+        }
     }
 }
 
