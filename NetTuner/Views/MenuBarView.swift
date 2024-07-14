@@ -173,5 +173,5 @@ struct MenuBarView: View {
 }
 
 #Preview {
-    MenuBarView()
+    MenuBarView().environment(AudioController())
 }
