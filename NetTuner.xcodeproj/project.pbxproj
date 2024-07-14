@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		030748BD2BCD8D980092FD7D /* RadioStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030748BC2BCD8D980092FD7D /* RadioStation.swift */; };
 		030BE24A2BCEB624000BDF4B /* NSApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BE2492BCEB624000BDF4B /* NSApplicationExtension.swift */; };
-		0338782F2BEF5191001CEB6F /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 0338782E2BEF5191001CEB6F /* SwiftCSV */; };
 		035844722BCD2EF50021863E /* NetTunerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844712BCD2EF50021863E /* NetTunerApp.swift */; };
 		035844742BCD2EF50021863E /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844732BCD2EF50021863E /* MenuBarView.swift */; };
 		035844762BCD2EF60021863E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035844752BCD2EF60021863E /* Assets.xcassets */; };
@@ -17,6 +16,7 @@
 		035844842BCD31860021863E /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035844832BCD31860021863E /* AudioController.swift */; };
 		0388364B2BCE63E2007E2F06 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0388364A2BCE63E2007E2F06 /* SettingsView.swift */; };
 		03AD652E2BECAF90004A25C4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 03AD652D2BECAF90004A25C4 /* Credits.rtf */; };
+		03D5A1C22C443C63006327F2 /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 03D5A1C12C443C63006327F2 /* SwiftCSV */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0338782F2BEF5191001CEB6F /* SwiftCSV in Frameworks */,
+				03D5A1C22C443C63006327F2 /* SwiftCSV in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +85,7 @@
 			children = (
 				035844702BCD2EF50021863E /* NetTuner */,
 				0358446F2BCD2EF50021863E /* Products */,
+				03D5A1C02C443C63006327F2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +123,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		03D5A1C02C443C63006327F2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,7 +147,7 @@
 			);
 			name = NetTuner;
 			packageProductDependencies = (
-				0338782E2BEF5191001CEB6F /* SwiftCSV */,
+				03D5A1C12C443C63006327F2 /* SwiftCSV */,
 			);
 			productName = NetTuner;
 			productReference = 0358446E2BCD2EF50021863E /* NetTuner.app */;
@@ -428,7 +436,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0338782E2BEF5191001CEB6F /* SwiftCSV */ = {
+		03D5A1C12C443C63006327F2 /* SwiftCSV */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0338782D2BEF5191001CEB6F /* XCRemoteSwiftPackageReference "SwiftCSV" */;
 			productName = SwiftCSV;
